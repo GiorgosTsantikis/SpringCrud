@@ -22,5 +22,10 @@ public class BookController {
         bookService.deleteBook(id);
     }
 
+    @PutMapping("/books/{id}")
+    public void updateBook(@PathVariable("id")int id,@RequestBody Book book){
+        bookService.updateBook(id,book);
+    }
+
 
 }

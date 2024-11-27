@@ -30,11 +30,6 @@ public class LibraryService {
         return libraryRepository.save(library);
     }
 
-    // Get all libraries
-    public List<Library> getAllLibraries() {
-        return libraryRepository.findAll();
-    }
-
     // Get a library by ID
     public Optional<Library> getLibraryById(int id) {
         return libraryRepository.findById(id);
@@ -81,6 +76,18 @@ public class LibraryService {
             return library;
         } else {
             throw new RuntimeException("Library or Book not found");
+        }
+    }
+
+    public Library updateLibrary(int id, Library library) {
+        Optional<Library> existingLibrary = libraryRepository.findById(id);
+
+        if (existingLibrary.isPresent()) {
+            Library toUpdate = existingLibrary.get();
+            toUpdate.setName(library.getName());
+            return libraryRepository.save(toUpdate);
+        } else {
+            throw new RuntimeException("Library not found with id " + id);
         }
     }
 

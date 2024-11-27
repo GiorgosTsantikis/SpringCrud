@@ -58,6 +58,11 @@ public class LibraryController {
 
 
 
+    @PutMapping("/library/{id}")
+    public void updateLibrary(@PathVariable("id")int id,@RequestBody Library lib){
+        libraryService.updateLibrary(id,lib);
+    }
+
     @PutMapping("/{library}/{book}")
     public void addBookToLibrary(@PathVariable("library") int libId,@PathVariable("book") int bookId){
        libraryService.addBookToLibrary(libId,bookId);
