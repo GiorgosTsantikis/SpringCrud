@@ -23,14 +23,12 @@ public class Library {
     )
     private List<Book> books = new ArrayList<>();
 
-    // Constructors
     public Library() {}
 
     public Library(String name) {
         this.name = name;
     }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

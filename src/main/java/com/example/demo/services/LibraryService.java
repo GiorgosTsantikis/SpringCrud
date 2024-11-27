@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,7 +84,12 @@ public class LibraryService {
         }
     }
 
-    // Update library details (for example, changing the library's name)
+   public List<String> findLibrariesByBookId(int id){
+        var libs= libraryRepository.findLibrariesByBookId(id);
+        var ret=new ArrayList<String>();
+        libs.stream().forEach(x->ret.add(x.getName()));
+        return ret;
+   }
 
 
     // Delete a library by ID

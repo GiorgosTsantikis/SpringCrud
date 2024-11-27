@@ -35,7 +35,7 @@ public class BookService {
         return bookRepository.findById(id);
     }
 
-    // Update a book (only updates fields that are provided)
+    // Update a book
     public Book updateBook(int id, Book bookDetails) {
         Optional<Book> existingBook = bookRepository.findById(id);
 
@@ -43,7 +43,6 @@ public class BookService {
             Book bookToUpdate = existingBook.get();
             bookToUpdate.setTitle(bookDetails.getTitle());
             bookToUpdate.setAuthor(bookDetails.getAuthor());
-            // Add other fields as necessary
             return bookRepository.save(bookToUpdate);
         } else {
             throw new RuntimeException("Book not found with id " + id);

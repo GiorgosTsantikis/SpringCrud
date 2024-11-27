@@ -38,8 +38,22 @@ public class LibraryController {
             return ret;
         }
         return null;
+    }
 
+    //Get libraries with bookId
+    @GetMapping("/libraries/{id}")
+    public List<String> getLibrariesFromBook(@PathVariable("id")int id){
+        return libraryService.findLibrariesByBookId(id);
+    }
 
+    @DeleteMapping("/library/{id}")
+    public void deleteLibrary(@PathVariable("id")int id){
+        libraryService.deleteLibrary(id);
+    }
+
+    @DeleteMapping("/{lib}/{id}")
+    public void deleteBookFromLibrary(@PathVariable("lib")int libId,@PathVariable("id")int bookId){
+        libraryService.removeBookFromLibrary(libId,bookId);
     }
 
 
