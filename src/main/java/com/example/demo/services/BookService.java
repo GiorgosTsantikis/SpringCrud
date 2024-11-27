@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -36,6 +37,10 @@ public class BookService {
         } else {
             throw new RuntimeException("Book not found with id " + id);
         }
+    }
+
+    public List<Book> getAllBooks(){
+        return bookRepository.findAll();
     }
 
     // Delete a book by ID
