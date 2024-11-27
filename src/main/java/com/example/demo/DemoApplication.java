@@ -28,9 +28,9 @@ public class DemoApplication implements CommandLineRunner {
 		Library lib1=new Library("lib1");
 		Library lib2=new Library("lib2");
 		Library lib3=new Library("lib3");
-		Book book1=new Book("book1","1");
-		Book book2=new Book("book2","2");
-		Book book3=new Book("book1","3");
+		Book book1=new Book("book1","1",10);
+		Book book2=new Book("book2","2",20);
+		Book book3=new Book("book1","3",30);
 		bookService.createBook(book1);
 		bookService.createBook(book2);
 		bookService.createBook(book3);

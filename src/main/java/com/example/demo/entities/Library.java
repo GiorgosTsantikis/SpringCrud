@@ -7,12 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name="LIBRARY")
 public class Library {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="ID")
     private int id;
 
+    @Column(name="NAME")
     private String name;
 
     @ManyToMany

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
+@Table(name="BOOK")
 public class Book {
 
     @Id
@@ -21,15 +22,19 @@ public class Book {
     @Column(name="author")
     private String author;
 
+    @Column(name="price")
+    private int price;
+
     @ManyToMany(mappedBy = "books") // This is the inverse side of the relationship
     private List<Library> libraries = new ArrayList<>();
 
     // Constructors
     public Book() {}
 
-    public Book(String title, String author) {
+    public Book(String title, String author,int price) {
         this.title = title;
         this.author = author;
+        this.price=price;
     }
 
     // Getters and Setters
