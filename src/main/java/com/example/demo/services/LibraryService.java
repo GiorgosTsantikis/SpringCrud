@@ -35,7 +35,7 @@ public class LibraryService {
         return libraryRepository.findById(id);
     }
 
-    // Add a book to a library
+    //TODO: Add a book to a library + ta else
     public Library addBookToLibrary(int libraryId, int bookId) {
         Optional<Library> libraryOptional = libraryRepository.findById(libraryId);
         Optional<Book> bookOptional = bookRepository.findById(bookId);
@@ -57,7 +57,7 @@ public class LibraryService {
         }
     }
 
-    // Remove a book from a library
+    // TODO:Remove a book from a library, verify/assert exceptions
     public Library removeBookFromLibrary(int libraryId, int bookId) {
         Optional<Library> libraryOptional = libraryRepository.findById(libraryId);
         Optional<Book> bookOptional = bookRepository.findById(bookId);

@@ -29,8 +29,8 @@ public class BookController {
     }
 
     @PutMapping("/books/{id}")
-    public void updateBook(@PathVariable("id")int id,@RequestBody Book book){
-        bookService.updateBook(id,book);
+    public Book updateBook(@PathVariable("id")int id,@RequestBody Book book){
+        return bookService.updateBook(id,book);
     }
 
     @GetMapping("/books")
