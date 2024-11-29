@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,17 +31,11 @@ public class LibraryService {
         return libraryRepository.save(library);
     }
 
-    // Get all libraries
-    public List<Library> getAllLibraries() {
-        return libraryRepository.findAll();
-    }
-
     // Get a library by ID
     public Optional<Library> getLibraryById(int id) {
         return libraryRepository.findById(id);
     }
 
-    // Add a book to a library
     public Library addBookToLibrary(int libraryId, int bookId) {
         Optional<Library> libraryOptional = libraryRepository.findById(libraryId);
         Optional<Book> bookOptional = bookRepository.findById(bookId);
@@ -61,7 +57,6 @@ public class LibraryService {
         }
     }
 
-    // Remove a book from a library
     public Library removeBookFromLibrary(int libraryId, int bookId) {
         Optional<Library> libraryOptional = libraryRepository.findById(libraryId);
         Optional<Book> bookOptional = bookRepository.findById(bookId);
@@ -83,7 +78,24 @@ public class LibraryService {
         }
     }
 
-    // Update library details (for example, changing the library's name)
+    public Library updateLibrary(int id, Library library) {
+        Optional<Library> existingLibrary = libraryRepository.findById(id);
+
+        if (existingLibrary.isPresent()) {
+            Library toUpdate = existingLibrary.get();
+            toUpdate.setName(library.getName());
+            return libraryRepository.save(toUpdate);
+        } else {
+            throw new RuntimeException("Library not found with id " + id);
+        }
+    }
+
+   public List<String> findLibrariesByBookId(int id){
+        var libs= libraryRepository.findLibrariesByBookId(id);
+        var ret=new ArrayList<String>();
+        libs.stream().forEach(x->ret.add(x.getName()));
+        return ret;
+   }
 
 
     // Delete a library by ID

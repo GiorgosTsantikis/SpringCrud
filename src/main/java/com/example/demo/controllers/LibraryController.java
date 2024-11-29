@@ -29,21 +29,43 @@ public class LibraryController {
     }
 
     @GetMapping("/library/{id}")
-    public java.util.List<String> getLibraryById(@PathVariable("id") int id){
-        var books=libraryService.getLibraryById(id);
-        if(books.isPresent()) {
-            System.out.println("\n\n"+books.get().getBooks()+"\n\n");
-            var ret=new ArrayList<String>();
-            books.get().getBooks().forEach(x->ret.add(x.getTitle()));
+    public java.util.List<String> getLibraryById(@PathVariable("id") int id) {
+        var books = libraryService.getLibraryById(id);
+        if (books.isPresent()) {
+            System.out.println("\n\n" + books.get().getBooks() + "\n\n");
+            var ret = new ArrayList<String>();
+            books.get().getBooks().forEach(x -> ret.add(x.getTitle()));
             return ret;
         }
-        return null;
+        ArrayList<String> empty = new ArrayList<>();
+        empty.add("null");
+        return empty;
+    }
 
+    //Get libraries with bookId
+    @GetMapping("/libraries/{id}")
+    public List<String> getLibrariesFromBook(@PathVariable("id")int id){
+        return libraryService.findLibrariesByBookId(id);
+    }
 
+    @DeleteMapping("/library/{id}")
+    public void deleteLibrary(@PathVariable("id")int id){
+        libraryService.deleteLibrary(id);
+    }
+
+    @DeleteMapping("/{lib}/{id}")
+    public void deleteBookFromLibrary(@PathVariable("lib")int libId,@PathVariable("id")int bookId){
+        libraryService.removeBookFromLibrary(libId,bookId);
     }
 
 
 
+    @PutMapping("/library/{id}")
+    public void updateLibrary(@PathVariable("id")int id,@RequestBody Library lib){
+        libraryService.updateLibrary(id,lib);
+    }
+
+    // /library/libId/book/bookId
     @PutMapping("/{library}/{book}")
     public void addBookToLibrary(@PathVariable("library") int libId,@PathVariable("book") int bookId){
        libraryService.addBookToLibrary(libId,bookId);

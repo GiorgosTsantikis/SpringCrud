@@ -7,35 +7,36 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name="LIBRARY")
 public class Library {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name="ID")
+    private int id;
 
+    @Column(name="NAME")
     private String name;
 
     @ManyToMany
     @JoinTable(
-            name = "library_book", // The name of the join table
-            joinColumns = @JoinColumn(name = "library_id"), // Foreign key column for Library
-            inverseJoinColumns = @JoinColumn(name = "book_id") // Foreign key column for Book
+            name = "library_book",
+            joinColumns = @JoinColumn(name = "library_id"),
+            inverseJoinColumns = @JoinColumn(name = "book_id")
     )
     private List<Book> books = new ArrayList<>();
 
-    // Constructors
     public Library() {}
 
     public Library(String name) {
         this.name = name;
     }
 
-    // Getters and Setters
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
