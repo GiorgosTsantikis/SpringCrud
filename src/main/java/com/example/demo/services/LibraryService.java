@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +36,6 @@ public class LibraryService {
         return libraryRepository.findById(id);
     }
 
-    //TODO: Add a book to a library + ta else
     public Library addBookToLibrary(int libraryId, int bookId) {
         Optional<Library> libraryOptional = libraryRepository.findById(libraryId);
         Optional<Book> bookOptional = bookRepository.findById(bookId);
@@ -57,7 +57,6 @@ public class LibraryService {
         }
     }
 
-    // TODO:Remove a book from a library, verify/assert exceptions
     public Library removeBookFromLibrary(int libraryId, int bookId) {
         Optional<Library> libraryOptional = libraryRepository.findById(libraryId);
         Optional<Book> bookOptional = bookRepository.findById(bookId);

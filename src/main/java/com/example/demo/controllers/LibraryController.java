@@ -28,17 +28,18 @@ public class LibraryController {
         libraryService.createLibrary(library);
     }
 
-    //TODO:test k service
     @GetMapping("/library/{id}")
-    public java.util.List<String> getLibraryById(@PathVariable("id") int id){
-        var books=libraryService.getLibraryById(id);
-        if(books.isPresent()) {
-            System.out.println("\n\n"+books.get().getBooks()+"\n\n");
-            var ret=new ArrayList<String>();
-            books.get().getBooks().forEach(x->ret.add(x.getTitle()));
+    public java.util.List<String> getLibraryById(@PathVariable("id") int id) {
+        var books = libraryService.getLibraryById(id);
+        if (books.isPresent()) {
+            System.out.println("\n\n" + books.get().getBooks() + "\n\n");
+            var ret = new ArrayList<String>();
+            books.get().getBooks().forEach(x -> ret.add(x.getTitle()));
             return ret;
         }
-        return null;
+        ArrayList<String> empty = new ArrayList<>();
+        empty.add("null");
+        return empty;
     }
 
     //Get libraries with bookId
