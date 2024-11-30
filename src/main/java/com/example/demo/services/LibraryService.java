@@ -97,6 +97,10 @@ public class LibraryService {
         return ret;
    }
 
+   public List<Library> getAllLibraries(){
+        return libraryRepository.findAll();
+   }
+
 
     // Delete a library by ID
     public void deleteLibrary(int id) {

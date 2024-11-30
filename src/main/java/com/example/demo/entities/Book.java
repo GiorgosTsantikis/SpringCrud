@@ -1,5 +1,8 @@
 package com.example.demo.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 
 import java.io.Serial;
@@ -11,6 +14,8 @@ import java.util.Set;
 
 @Entity
 @Table(name="BOOK")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+
 public class Book implements Serializable {
 
     @Serial
@@ -29,7 +34,12 @@ public class Book implements Serializable {
     @Column(name="price")
     private int price;
 
-    @ManyToMany(mappedBy = "books") // This is the inverse side of the relationship
+    @ManyToMany
+    @JoinTable(
+            name = "library_book",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "library_id")
+    )
     private List<Library> libraries = new ArrayList<>();
 
     // Constructors

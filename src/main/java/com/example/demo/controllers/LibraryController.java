@@ -42,6 +42,11 @@ public class LibraryController {
         return empty;
     }
 
+    @GetMapping("/libraries")
+    public List<Library> getAllLibraries(){
+        return libraryService.getAllLibraries();
+    }
+
     //Get libraries with bookId
     @GetMapping("/libraries/{id}")
     public List<String> getLibrariesFromBook(@PathVariable("id")int id){
