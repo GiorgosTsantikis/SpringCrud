@@ -44,6 +44,7 @@ public class LibraryService {
             Library library = libraryOptional.get();
             Book book = bookOptional.get();
 
+            //TODO:Assign return library from repo.save
             // Check if the book is already in the library
             if (!library.getBooks().contains(book)) {
                 library.getBooks().add(book);
@@ -95,6 +96,10 @@ public class LibraryService {
         var ret=new ArrayList<String>();
         libs.stream().forEach(x->ret.add(x.getName()));
         return ret;
+   }
+
+   public List<Library> getAllLibraries(){
+        return libraryRepository.findAll();
    }
 
 
