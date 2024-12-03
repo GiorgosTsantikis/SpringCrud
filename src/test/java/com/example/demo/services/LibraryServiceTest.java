@@ -48,6 +48,7 @@ public class LibraryServiceTest {
         when(libraryRepository.save(any(Library.class))).thenReturn(library);
 
         //Correct insertion
+        //TODO:Test return value
         libraryService.addBookToLibrary(1,1);
         Assertions.assertEquals(library.getBooks().get(0).getId(),book.getId(),"First book of library should be book with id of 1");
 
