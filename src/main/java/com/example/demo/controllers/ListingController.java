@@ -25,6 +25,16 @@ public class ListingController {
         return this.listingService.getAllListings();
     }
 
+    @GetMapping("/listings/{id}")
+    public Listing getListingWithId(@PathVariable int id){
+        try{
+           return  this.listingService.getListingById(id);
+        } catch (Exception e) {
+            System.out.println("Problem not found id:"+id);
+        }
+        return null;
+    }
+
     @PostMapping("listings")
     public int createListing(@RequestBody Listing listing){
         return this.listingService.saveListing(new Listing(listing));

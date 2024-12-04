@@ -26,7 +26,7 @@ public class Listing {
     private String state;
     @Column(name="photo")
     private String photo;
-    @Column(name="landry")
+    @Column(name="laundry")
     private boolean laundry;
     @Column(name="wifi")
     private boolean wifi;
