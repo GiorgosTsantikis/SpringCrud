@@ -3,7 +3,9 @@ package com.example.demo.controllers;
 
 import com.example.demo.config.JwtService;
 import com.example.demo.entities.User;
+import com.example.demo.entities.UserDetails;
 import com.example.demo.services.ImageService;
+import com.example.demo.services.UserDetailsService;
 import com.example.demo.services.UserService;
 import jakarta.persistence.Tuple;
 import org.apache.tomcat.util.json.JSONParser;
@@ -28,6 +30,9 @@ public class UserController {
 
     @Autowired
     private ImageService imageService;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @Autowired
     private JwtService jwtService;
@@ -56,8 +61,9 @@ public class UserController {
    if(imgPath==null){return ResponseEntity.status(400).body("error");}
    try {
        User user = userService.getUserFromToken((String) token.getCredentials());
-       user.setProfilePic(imgPath);
-       userService.updateUser(user);
+       UserDetails userDetails=userDetailsService.getUserDetailsById(user.getId());
+       userDetails.setProfilePic(imgPath);
+       userDetailsService.updateUserDetails(userDetails,user.getId());
        return ResponseEntity.ok("File upload success");
    }catch (Exception e){
        return ResponseEntity.status(400).body("Problem saving image");
@@ -69,8 +75,8 @@ public class UserController {
     public ResponseEntity<String> getPic(JwtAuthenticationToken jwtAuthenticationToken){
         System.out.println(jwtAuthenticationToken);
         try{
-            User user=userService.getUserFromToken((String)jwtAuthenticationToken.getCredentials());
-            String encodedImg= Base64.getEncoder().encodeToString(imageService.getImage(user.getProfilePic()));
+            UserDetails userDetails=userDetailsService.getUserDetailsById(userService.getUserFromToken((String)jwtAuthenticationToken.getCredentials()).getId());
+            String encodedImg= Base64.getEncoder().encodeToString(imageService.getImage(userDetails.getProfilePic()));
             return ResponseEntity.ok(encodedImg);
         } catch (Exception e) {
             return ResponseEntity.status(404).body(null);
@@ -96,6 +102,20 @@ public class UserController {
 
         }
         return ResponseEntity.status(403).body("Error updating user");
+    }
+
+    @PutMapping("updateUserDetails")
+    public ResponseEntity<?> updateUserDetails(JwtAuthenticationToken token,@RequestBody UserDetails userDetails){
+        try{
+            User user=userService.getUserFromToken((String) token.getCredentials());
+            if(user!=null){
+                userDetailsService.updateUserDetails(userDetails,user.getId());
+                return ResponseEntity.ok("User update success");
+            }
+        } catch (RuntimeException e) {
+            System.out.println(e);
+        }
+        return ResponseEntity.status(400).body("Problem updating user details");
     }
 
 

@@ -29,12 +29,21 @@ public class User   {
     @Column(name="role")
     private Role role;
 
-    @Column(name="profile_pic")
-    private String profilePic;
 
-    public String getProfilePic() {
-        return profilePic;
+
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    @PrimaryKeyJoinColumn
+    private UserDetails userDetails;
+
+    public UserDetails getUserDetails() {
+        return userDetails;
     }
+
+    public void setUserDetails(UserDetails userDetails) {
+        this.userDetails = userDetails;
+    }
+
+
 
     @Override
     public String toString() {
@@ -44,13 +53,9 @@ public class User   {
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", role=" + role +
-                ", profilePic='" + profilePic + '\'' +
                 '}';
     }
 
-    public void setProfilePic(String profilePic) {
-        this.profilePic = profilePic;
-    }
 
     public User(String username, String password, String email, Role role) {
         this.username = username;

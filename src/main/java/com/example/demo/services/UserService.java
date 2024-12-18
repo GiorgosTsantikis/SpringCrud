@@ -2,6 +2,8 @@ package com.example.demo.services;
 
 import com.example.demo.config.JwtService;
 import com.example.demo.entities.User;
+import com.example.demo.entities.UserDetails;
+import com.example.demo.repositories.UserDetailsRepository;
 import com.example.demo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,13 +19,14 @@ public class UserService {
 
     private JwtService jwtService;
     private UserRepository userRepository;
-    private ImageService imageService;
+    private UserDetailsRepository userDetailsRepository;
+
 
     @Autowired
-    public UserService(UserRepository userRepository,JwtService jwtService,ImageService imageService){
+    public UserService(UserRepository userRepository,JwtService jwtService,UserDetailsRepository userDetailsRepository ){
         this.jwtService=jwtService;
         this.userRepository=userRepository;
-        this.imageService=imageService;
+        this.userDetailsRepository=userDetailsRepository;
     }
 
 
@@ -31,7 +34,13 @@ public class UserService {
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new IllegalArgumentException("Username is already taken");
         }
-        userRepository.save(user);
+
+        User saved=userRepository.save(user);
+        UserDetails userDetails=new UserDetails();
+        userDetails.setUser(saved);
+        userDetailsRepository.save(userDetails);
+        saved.setUserDetails(userDetails);
+        userRepository.save(saved);
     }
 
     public void updateUser(User user){
@@ -57,8 +66,5 @@ public class UserService {
     }
 
 
-    public void saveProfileImg(String imgPath,User user) {
-        user.setProfilePic(imgPath);
-        this.updateUser(user);
-    }
+
 }
