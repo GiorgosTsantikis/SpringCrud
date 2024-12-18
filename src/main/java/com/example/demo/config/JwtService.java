@@ -1,17 +1,18 @@
 package com.example.demo.config;
 
+import com.example.demo.entities.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -21,7 +22,17 @@ public class JwtService {
 
     //ok
     public String extractUsername(String token){
-        return extractAllClaims(token).getSubject();
+        try {
+            return extractAllClaims(token).getSubject();
+        }catch(Exception e){
+            System.out.println("Invalid token");
+        }
+        return null;
+    }
+
+    public String extractRole(String token){
+        Claims claims=extractAllClaims(token);
+        return claims.get("role", String.class);
     }
 
 
@@ -29,7 +40,10 @@ public class JwtService {
     //ok
     public boolean isTokenValid(String token,String username){
          String extractUsername=extractUsername(token);
-        return (username.equals(extractUsername))&& !isTokenExpired(token);
+         if(username!=null) {
+             return (username.equals(extractUsername)) && !isTokenExpired(token);
+         }
+         return false;
     }
 
     //ok
@@ -37,13 +51,28 @@ public class JwtService {
         return extractAllClaims(token).getExpiration().before(new Date());
     }
 
+    public Collection<GrantedAuthority> getAuthoritiesFromToken(String token) {
+        // Decode the token and extract roles
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(SECRET_KEY) // Use your secret key
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        String role = claims.get("role", String.class); // Assuming the role is stored as "role" in JWT
+        return Collections.singletonList(new SimpleGrantedAuthority( role)); // Add "ROLE_" prefix to role
+    }
+
 
 
 
     //ok
-    public String generateToken(String username){
+    public String generateToken(User user){
+        Claims claims=Jwts.claims().setSubject(user.getUsername());
+        claims.put("role",user.getRole());
+
         return Jwts.builder()
-                .setSubject(username)
+                .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis()+1000*60*24))
                 .signWith( SignatureAlgorithm.HS256,JwtService.SECRET_KEY)
@@ -52,10 +81,15 @@ public class JwtService {
 
     //ok
     private Claims extractAllClaims(String token){
-        return Jwts.parser()
-                .setSigningKey(JwtService.SECRET_KEY)
-                .parseClaimsJws(token)
-                .getBody();
+        try {
+            return Jwts.parser()
+                    .setSigningKey(JwtService.SECRET_KEY)
+                    .parseClaimsJws(token)
+                    .getBody();
+        }catch (Exception e){
+            System.out.println(e);
+        }
+        return null;
     }
 
 
