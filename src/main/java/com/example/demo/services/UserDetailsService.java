@@ -1,9 +1,7 @@
 package com.example.demo.services;
 
-import com.example.demo.entities.User;
 import com.example.demo.entities.UserDetails;
 import com.example.demo.repositories.UserDetailsRepository;
-import com.example.demo.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +21,7 @@ public class UserDetailsService {
 
 
     //TODO Make extensible
-    public UserDetails updateUserDetails(UserDetails userDetails,Long id){
+    public UserDetails updateUserDetails(UserDetails userDetails,String id){
         UserDetails userDetailsOld=userDetailsRepository.findById(id)
                 .orElseThrow(()->new RuntimeException("User details not found "+id));
         if(userDetails.getAddress()!=null){
@@ -38,16 +36,24 @@ public class UserDetailsService {
         return userDetailsRepository.save(userDetailsOld);
     }
 
-    public UserDetails getUserDetailsById(Long id){
-        return userDetailsRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("User details not found"+id));
+    public UserDetails getUserDetailsById(String id){
+       Optional<UserDetails> userDetails=userDetailsRepository.findById(id);
+       if(userDetails.isPresent()){
+           return userDetails.get();
+       }else{
+           return createUserDetails(id);
+       }
+    }
+
+    public UserDetails createUserDetails(String id){
+        return userDetailsRepository.save(new UserDetails(id));
     }
 
 
 
 
 
-    public boolean saveProfileImg(String imgPath,Long id) {
+    public boolean saveProfileImg(String imgPath,String id) {
         Optional<UserDetails>userDetails=userDetailsRepository.findById(id);
         if(userDetails.isPresent()) {
             userDetails.get().setProfilePic(imgPath);
