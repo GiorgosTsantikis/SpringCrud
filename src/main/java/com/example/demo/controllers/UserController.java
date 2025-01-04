@@ -1,32 +1,26 @@
 package com.example.demo.controllers;
 
 
-import com.example.demo.config.JwtService;
-import com.example.demo.entities.User;
 import com.example.demo.entities.UserDetails;
+import com.example.demo.model.ProfileDTO;
 import com.example.demo.services.ImageService;
+import com.example.demo.services.KeycloakUserService;
 import com.example.demo.services.UserDetailsService;
-import com.example.demo.services.UserService;
-import jakarta.persistence.Tuple;
-import org.apache.tomcat.util.json.JSONParser;
+import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @CrossOrigin(origins="http://localhost:5173")
 @RequestMapping("/users")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+
 
     @Autowired
     private ImageService imageService;
@@ -35,35 +29,32 @@ public class UserController {
     private UserDetailsService userDetailsService;
 
     @Autowired
-    private JwtService jwtService;
+    private KeycloakUserService keycloakUserService;
+
+
 
 
 
     @GetMapping("/profile")
-    public ResponseEntity<User> getProfile(JwtAuthenticationToken authenticationToken) {
+    public ResponseEntity<ProfileDTO> getProfile(Authentication authentication ) {
         // Extract the username from the JWT
-        try {
-            User user = userService.getUserFromToken((String) authenticationToken.getCredentials());
-            System.out.println("you are looking for"+jwtService.extractRole((String)authenticationToken.getCredentials())+" "+user);
-            return ResponseEntity.ok(user);// Fetch user details from DB
-        } catch (RuntimeException e) {
-            System.out.println(e+" error");
-            return ResponseEntity.status(404).body(null);
-        }
+        var keycloakUser=keycloakUserService.getUserById(authentication.getName());
+        var userDetails=userDetailsService.getUserDetailsById(authentication.getName());
+        return ResponseEntity.ok(new ProfileDTO(keycloakUser.getUsername(),keycloakUser.getEmail(),userDetails));
+
     }
 
     @PostMapping("/pic")
     public ResponseEntity<String> uploadPic(
-            JwtAuthenticationToken token,
-        @RequestParam("img") MultipartFile img
+
+        @RequestParam("img") MultipartFile img,Authentication authentication
     ){
    String imgPath= imageService.saveImageToStorage(img);
    if(imgPath==null){return ResponseEntity.status(400).body("error");}
    try {
-       User user = userService.getUserFromToken((String) token.getCredentials());
-       UserDetails userDetails=userDetailsService.getUserDetailsById(user.getId());
+       UserDetails userDetails=userDetailsService.getUserDetailsById(authentication.getName());
        userDetails.setProfilePic(imgPath);
-       userDetailsService.updateUserDetails(userDetails,user.getId());
+       userDetailsService.updateUserDetails(userDetails, authentication.getName());
        return ResponseEntity.ok("File upload success");
    }catch (Exception e){
        return ResponseEntity.status(400).body("Problem saving image");
@@ -71,19 +62,29 @@ public class UserController {
    //TODO Error checking
     }
 
+
     @GetMapping("/picture")
-    public ResponseEntity<String> getPic(JwtAuthenticationToken jwtAuthenticationToken){
-        System.out.println(jwtAuthenticationToken);
+    public ResponseEntity<String> getPic(Authentication authentication){
+        System.out.println(authentication.getCredentials()+"  "+ authentication.getName()+" "+authentication.getPrincipal());
+        UserRepresentation userRepresentation=keycloakUserService.getUserById(authentication.getName());
+        System.out.println(userRepresentation.getUsername());
+
+
         try{
-            UserDetails userDetails=userDetailsService.getUserDetailsById(userService.getUserFromToken((String)jwtAuthenticationToken.getCredentials()).getId());
+            UserDetails userDetails=userDetailsService.getUserDetailsById(userRepresentation.getId());
             String encodedImg= Base64.getEncoder().encodeToString(imageService.getImage(userDetails.getProfilePic()));
             return ResponseEntity.ok(encodedImg);
         } catch (Exception e) {
             return ResponseEntity.status(404).body(null);
         }
+
+
     }
 
 
+
+
+    /*
     @PutMapping("/updateUsername")
     public ResponseEntity<?> updateUser(JwtAuthenticationToken token,@RequestBody Map<String,String> request){
         try{
@@ -104,6 +105,9 @@ public class UserController {
         return ResponseEntity.status(403).body("Error updating user");
     }
 
+     */
+
+    /*
     @PutMapping("updateUserDetails")
     public ResponseEntity<?> updateUserDetails(JwtAuthenticationToken token,@RequestBody UserDetails userDetails){
         try{
@@ -117,6 +121,8 @@ public class UserController {
         }
         return ResponseEntity.status(400).body("Problem updating user details");
     }
+
+     */
 
 
 

@@ -1,10 +1,7 @@
 package com.example.demo.config;
 
 import com.example.demo.entities.Listing;
-import com.example.demo.entities.Role;
-import com.example.demo.entities.User;
 import com.example.demo.services.ListingService;
-import com.example.demo.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -23,12 +20,11 @@ public class AppConfiguration {
 
 
     private final ListingService listingService;
-    private final UserService userService;
 
     @Autowired
-    public AppConfiguration(ListingService listingService,UserService userService){
+    public AppConfiguration(ListingService listingService){
         this.listingService=listingService;
-        this.userService=userService;
+
     }
 
     @Bean
@@ -51,9 +47,7 @@ public class AppConfiguration {
             theListings.add(new Listing("final house","Athens","state1","assets/house.jpg",true,true,8,70_000,5));
             theListings.forEach(this.listingService::saveListing);
 
-            User admin=userService.findByUsername("admin");
-            admin.setRole(Role.ROLE_ADMIN);
-            userService.updateUser(admin);
+
 
 
 

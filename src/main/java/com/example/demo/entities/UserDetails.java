@@ -9,7 +9,8 @@ import jakarta.persistence.*;
 public class UserDetails {
 
     @Id
-    private Long id;
+    @Column(name="user_details_id")
+    private String id;
 
     @Column(name="country")
     private String country;
@@ -23,31 +24,30 @@ public class UserDetails {
     @Column(name="profile_pic")
     private String profilePic;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @MapsId
-    @JoinColumn(name="user_id",referencedColumnName = "id")
-    @JsonIgnore
-    private User user;
 
-    public UserDetails(Long id, String country, String state, String address, User user) {
+
+    public UserDetails(String id, String country, String state, String address) {
         this.id = id;
         this.country = country;
         this.state = state;
         this.address = address;
-        this.user = user;
     }
 
     public UserDetails() {
     }
 
-    public UserDetails(String country, String state, String address, User user) {
+    public UserDetails(String id){
+        this.id=id;
+    }
+
+    public UserDetails(String country, String state, String address) {
         this.country = country;
         this.state = state;
         this.address = address;
-        this.user = user;
+
     }
 
-    public UserDetails(UserDetails userDetails,Long id){
+    public UserDetails(UserDetails userDetails,String id){
         this.id=id;
        this.country=userDetails.country;
        this.state=userDetails.state;
@@ -62,11 +62,11 @@ public class UserDetails {
         this.profilePic = profilePic;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -94,13 +94,7 @@ public class UserDetails {
         this.address = address;
     }
 
-    public User getUser() {
-        return user;
-    }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
 
 
 }
