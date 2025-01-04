@@ -83,6 +83,8 @@ public class KeycloakUserService {
     }
 
 
+
+
     public List<UserRepresentation> getUsers(){
         UsersResource usersResource=keycloak.realm("SpringApp").users();
         return usersResource.list();
