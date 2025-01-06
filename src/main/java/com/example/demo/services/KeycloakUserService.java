@@ -1,6 +1,7 @@
 package com.example.demo.services;
 
 import com.example.demo.config.KeycloakConfig;
+import com.example.demo.controllers.ListingController;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import org.keycloak.admin.client.Keycloak;
@@ -9,7 +10,10 @@ import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.GroupRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -20,6 +24,9 @@ public class KeycloakUserService {
 
     private final String groupId="ac89c612-4c0c-43e0-9eb9-421f0166861b";
 
+    @Value ("${keycloak.realm}")
+    private String realm;
+
     @Autowired
     private Keycloak keycloak;
 
@@ -29,6 +36,10 @@ public class KeycloakUserService {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    private static final Logger logger = LoggerFactory.getLogger(KeycloakUserService.class);
+
+
+    //TODO VERIFY OBSOLETE
     public String createUser(String username, String email, String password) {
         // Create user representation
         UserRepresentation user = new UserRepresentation();
@@ -79,6 +90,7 @@ public class KeycloakUserService {
     public UserRepresentation getUserById(String id){
         UsersResource usersResource= keycloak.realm("SpringApp").users();
         UserResource userResource =usersResource.get(id);
+        logger.debug("KeycloakUserService.getUserById( {} ) result {}",id,userResource.toRepresentation());
         return userResource.toRepresentation();
     }
 
@@ -87,7 +99,27 @@ public class KeycloakUserService {
 
     public List<UserRepresentation> getUsers(){
         UsersResource usersResource=keycloak.realm("SpringApp").users();
+        logger.debug("KeycloakUserService.getUsers() result {}",usersResource.list());
         return usersResource.list();
     }
+
+
+
+    public UserRepresentation getUserByEmailOrUsername(String usernameOrEmail){
+        logger.debug("KeycloakUserService.getUserByEmailOrUsername( {} )",usernameOrEmail);
+        List<UserRepresentation> user= keycloak.realm(realm)
+                .users()
+                .searchByEmail(usernameOrEmail,true);
+        if(user.size()==0){
+            user=keycloak.realm(realm)
+                    .users()
+                    .searchByUsername(usernameOrEmail,true);
+        }
+        logger.debug("KeycloakUserService.getUserByEmailOrUsername result {})",user);
+        if(user.size()==0){return null;}
+        else{return user.getFirst();}
+
+    }
+
 }
 

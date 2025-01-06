@@ -2,16 +2,23 @@ package com.example.demo.controllers;
 
 import com.example.demo.entities.Listing;
 import com.example.demo.services.ListingService;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.slf4j.Logger;
+
+import static org.hibernate.internal.CoreLogging.logger;
 
 @RestController
 @CrossOrigin(origins="http://localhost:5173")
 public class ListingController {
 
     private ListingService listingService;
+
+    private static final Logger logger = LoggerFactory.getLogger(ListingController.class);
+
 
     @Autowired
     public ListingController(ListingService listingService)
@@ -21,8 +28,10 @@ public class ListingController {
 
     @GetMapping("/listings")
     public List<Listing> getListings(){
-        System.out.println("called");
-        return this.listingService.getAllListings();
+        logger.info("CALLING /listings");
+        List<Listing> listings= this.listingService.getAllListings();
+        logger.info("RESULT {}",listings);
+        return listings;
     }
 
     @GetMapping("/listings/{id}")

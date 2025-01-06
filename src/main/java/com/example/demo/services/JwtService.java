@@ -4,7 +4,10 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.demo.controllers.ListingController;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -44,6 +47,9 @@ public class JwtService {
 
     private final RestTemplate restTemplate;
 
+    private static final Logger logger = LoggerFactory.getLogger(JwtService.class);
+
+
     @Autowired
     public JwtService(RestTemplate restTemplate){
         this.restTemplate=restTemplate;
@@ -51,6 +57,7 @@ public class JwtService {
 
 
     public boolean isTokenValid(String token){
+        logger.debug("JwtService.isTokenValid( {} )",token);
         String introspectionUrl = String.format("%s/realms/%s/protocol/openid-connect/token/introspect", keycloakUrl, realm);
         if(token==null){return false;}
         // Request body
@@ -65,17 +72,18 @@ public class JwtService {
 
         // Make the POST request
         try{
+            logger.debug("CALLING POST  {} request {} ",introspectionUrl,request);
             var response=restTemplate.exchange(introspectionUrl,HttpMethod.POST,request,Map.class);
-            System.out.println(response+" response");
+
             Boolean active=(Boolean)response.getBody().get("active");
-            System.out.println(active+" "+response.getBody().get("active"));
+            logger.debug("RESPONSE {} active? {}",response,active);
             if(active){
                 return true;
             }else{
                 return false;
             }
             }catch(Exception e){
-            System.out.println("Error"+e);
+           logger.warn("exception in http request",e);
             return false;
 
         }
@@ -84,24 +92,27 @@ public class JwtService {
     public String getUserFromToken(String token){
         DecodedJWT decodedJWT= JWT.decode(token);
         String username= decodedJWT.getClaim("preferred_username").toString();
-        System.out.println(username);
+        logger.debug("JwtService.getUserFromToken( {} ) username {}",token,username);
         return username;
     }
 
    public String getAttributeFromToken(String token,String attribute){
         DecodedJWT decodedJWT=JWT.decode(token);
         String result=decodedJWT.getClaim(attribute).toString();
+        logger.debug("JwtService.getAttributeFromToken( {}, {} ) result {}",token,attribute,result);
         return result;
    }
 
    public Set<String> getClaims(String token){
         DecodedJWT decodedJWT=JWT.decode(token);
         var claims=decodedJWT.getClaims().keySet();
+        logger.debug("JwtService.getClaims( {} ) claims {}",token,claims);
         return claims;
    }
 
    public boolean validateToken(String token){
        X509EncodedKeySpec keySpec=new X509EncodedKeySpec(Base64.getDecoder().decode(key));
+       logger.debug("JwtService.validateToken( {} )",token);
        try{
            KeyFactory keyFactory=KeyFactory.getInstance("RSA");
            RSAPublicKey key= (RSAPublicKey) keyFactory.generatePublic(keySpec);
@@ -109,9 +120,10 @@ public class JwtService {
                    .withIssuer(issuer)
                    .build();
            verifier.verify(token);
+           logger.debug("Verified");
            return true;
        } catch (Exception e) {
-           System.out.println(e+" error in validation");
+           logger.warn("Exception in JwtService.validateToken ",e);
        }
        return false;
    }

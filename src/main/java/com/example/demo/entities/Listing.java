@@ -144,4 +144,20 @@ public class Listing {
     public void setAvailableUnits(int availableUnits) {
         this.availableUnits = availableUnits;
     }
+
+    @Override
+    public String toString() {
+        return "Listing{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", city='" + city + '\'' +
+                ", state='" + state + '\'' +
+                ", photo='" + photo + '\'' +
+                ", laundry=" + laundry +
+                ", wifi=" + wifi +
+                ", availableUnits=" + availableUnits +
+                ", price=" + price +
+                ", rooms=" + rooms +
+                '}';
+    }
 }

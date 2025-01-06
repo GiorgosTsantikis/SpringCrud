@@ -4,6 +4,10 @@ package com.example.demo.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Entity
 @Table(name="user_details")
 public class UserDetails {
@@ -23,6 +27,7 @@ public class UserDetails {
 
     @Column(name="profile_pic")
     private String profilePic;
+
 
 
 
@@ -53,6 +58,8 @@ public class UserDetails {
        this.state=userDetails.state;
        this.address=userDetails.address;
     }
+
+
 
     public String getProfilePic() {
         return profilePic;
@@ -95,6 +102,14 @@ public class UserDetails {
     }
 
 
-
-
+    @Override
+    public String toString() {
+        return "UserDetails{" +
+                "id='" + id + '\'' +
+                ", country='" + country + '\'' +
+                ", state='" + state + '\'' +
+                ", address='" + address + '\'' +
+                ", profilePic='" + profilePic + '\'' +
+                '}';
+    }
 }

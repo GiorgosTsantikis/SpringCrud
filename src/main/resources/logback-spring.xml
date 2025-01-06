@@ -1,0 +1,61 @@
+<configuration scan="true" scanPeriod="60 seconds">
+    <property name="LOG_DIR" value="C:/Coding/logs"/>
+
+    <!-- Appender for Framework Logs -->
+    <appender name="FRAMEWORK_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/application-framework.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/application-framework-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level - %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Appender for Application Logs -->
+    <appender name="APPLICATION_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/application.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/application-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level - %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Console Appender -->
+
+
+    <logger name="org.springframework" level="INFO">
+        <appender-ref ref="FRAMEWORK_FILE"/>
+    </logger>
+
+    <logger name="com.zaxxer.hikari.pool" level="INFO">
+        <appender-ref ref="FRAMEWORK_FILE"/>
+    </logger>
+
+
+    <!-- Logger for Framework Logs -->
+    <logger name="org.springframework.security.oauth2" level="DEBUG" additivity="false">
+        <appender-ref ref="FRAMEWORK_FILE" />
+    </logger>
+
+    <logger name="org.keycloak.adapters" level="DEBUG" additivity="false">
+        <appender-ref ref="FRAMEWORK_FILE" />
+    </logger>
+
+    <logger name="org.hibernate" level="DEBUG" additivity="false">
+        <appender-ref ref="FRAMEWORK_FILE" />
+    </logger>
+
+    <logger name="com.example.demo" level="DEBUG" additivity="false">
+            <appender-ref ref="APPLICATION_FILE"/>
+    </logger>
+
+    <!-- Root Logger for Application Logs -->
+    <root level="INFO">
+        <appender-ref ref="APPLICATION_FILE" />
+    </root>
+</configuration>
