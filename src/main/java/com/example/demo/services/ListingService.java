@@ -29,7 +29,7 @@ public class ListingService {
 
     public List<Listing> getAllListings(){
         List<Listing> result=this.listingRepository.findAll();
-        logger.debug("ListingService.getAllListings() result {}",result);
+        logger.debug("ListingService.getAllListings() ");
         return result;
     }
 

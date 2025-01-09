@@ -19,6 +19,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Set;
 
@@ -45,7 +46,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
+        config.enableSimpleBroker("/topic","/user");
         config.setApplicationDestinationPrefixes("/app");
         config.setUserDestinationPrefix("/user");
     }
@@ -56,17 +57,25 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
+                logger.debug("received message {}, channel {}",message,channel);
                 StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                    logger.debug("STOMP CONNECT COMMAND {}",accessor.toString());
                     if (accessor.containsNativeHeader("Authorization")) {
                         List<String> list = accessor.getNativeHeader("Authorization");
                         String token = list.get(0).substring(7);
                         logger.debug("STOMP CONNECT COMMAND TOKEN {}",token);
 
-                        if (jwtService.isTokenValid(token)) {
+                        if (token!=null && jwtService.isTokenValid(token)) {
                             accessor.getSessionAttributes().put("token", token);
                             logger.debug("STOMP CONNECT COMMAND TOKEN VALID");
+                            accessor.setUser(new Principal() {
+                                @Override
+                                public String getName() {
+                                    String id= jwtService.getIdFromToken(token);
+                                    logger.debug("id from token {}",token);
+                                    return id;
+                                }
+                            });
                             return message;
                         } else {
                            // throw new IllegalArgumentException("Invalid token.");

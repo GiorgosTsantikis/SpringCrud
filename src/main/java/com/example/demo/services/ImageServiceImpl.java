@@ -49,7 +49,7 @@ public class ImageServiceImpl implements ImageService {
             if(Files.exists(imagePath)){
                 try {
                     byte[] imageBytes=Files.readAllBytes(imagePath);
-                    logger.debug("returning image {}",imageBytes);
+                    logger.debug("returning image ");
                     return imageBytes;
                 } catch (IOException e) {
                    logger.warn("Image doesn't exist {}",imagePath);

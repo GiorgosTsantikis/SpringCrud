@@ -1,56 +1,59 @@
 package com.example.demo.controllers;
 
-import com.example.demo.entities.MessageDTO;
+import com.example.demo.entities.Message;
+import com.example.demo.services.ImageServiceImpl;
 import com.example.demo.services.JwtService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
+import java.security.Principal;
 import java.util.Date;
 import java.util.Map;
 
 @Controller
 public class ChatController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
+
+
     private final JwtService jwtService;
 
+    private final SimpMessagingTemplate simpMessagingTemplate;
+
     @Autowired
-    public ChatController(JwtService jwtService){
+    public ChatController(JwtService jwtService,SimpMessagingTemplate simpMessagingTemplate){
         this.jwtService=jwtService;
+        this.simpMessagingTemplate=simpMessagingTemplate;
     }
 
-    @MessageMapping("/sendMessage")
+    @MessageMapping("/whatever")
     @SendTo("/topic/messages")
-    public MessageDTO handleChatMessage(StompHeaderAccessor accessor,MessageDTO message){
-        System.out.println(message.getContent());
-        /*
-        if(accessor.getSessionAttributes().get("authenticated")!=null && (boolean)accessor.getSessionAttributes().get("authenticated")) {
-            System.out.println("Authenticated");
-            return message;
-        }
-        return new MessageDTO("fucku","fucku","fucku",new Date());
+    public Message handleChatMessage(StompHeaderAccessor accessor, String message){
+        logger.debug("ChatController /chat {} sending to topic/messages",message);
 
-         */
-        return message;
+        if(accessor.getSessionAttributes().get("token")!=null ) {
+            logger.debug("Authenticated user sent message");
+            return null;
+        }
+        return new Message("fucku","fucku","fucku",new Date());
     }
 
-    @MessageMapping("/authenticate")
-    public void authenticate(StompHeaderAccessor accessor,@Payload Map<String,String>  payload){
-        String token=payload.get("token");
-        System.out.println(token+" this is the token in /authenticate");
-        boolean isValid = jwtService.isTokenValid(token);
-        /*
-        if (isValid) {
-            accessor.getSessionAttributes().put("token", token); // Mark session as authenticated
-            System.out.println("Token is valid for session: " + accessor.getSessionId());
-        } else {
-            accessor.getSessionAttributes().put("authenticated", false); // Mark session as unauthenticated
-            System.out.println("Invalid token for session: " + accessor.getSessionId());
-        }
+    @MessageMapping("/user/{id}/queue/messages")
+    public void downInTheDms(Principal principal, @Payload String message, @DestinationVariable("id") String id){
 
-         */
+        var msg= new Message(principal.getName(),id ,message,new Date());
+        logger.debug("ChatController received private message from {} to {} content {} sending to queue",principal.getName(),id,message);
+        simpMessagingTemplate.convertAndSendToUser(id,"/queue/messages",msg);
     }
+
+
+
 }

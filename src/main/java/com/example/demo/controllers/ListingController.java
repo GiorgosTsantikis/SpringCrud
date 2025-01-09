@@ -30,7 +30,7 @@ public class ListingController {
     public List<Listing> getListings(){
         logger.info("CALLING /listings");
         List<Listing> listings= this.listingService.getAllListings();
-        logger.info("RESULT {}",listings);
+        //logger.info("RESULT {}",listings);
         return listings;
     }
 

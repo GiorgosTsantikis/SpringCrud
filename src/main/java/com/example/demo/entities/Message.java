@@ -6,7 +6,7 @@ import java.util.Date;
 
 @Entity
 @Table(name="messages")
-public class MessageDTO {
+public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,9 +24,9 @@ public class MessageDTO {
     @Column(name="sentAt")
     private Date sentAt;
 
-    public MessageDTO(){}
+    public Message(){}
 
-    public MessageDTO(String senderId, String receiverId, String content, Date sentAt) {
+    public Message(String senderId, String receiverId, String content, Date sentAt) {
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.content = content;

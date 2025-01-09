@@ -96,6 +96,13 @@ public class JwtService {
         return username;
     }
 
+    public String getIdFromToken(String token){
+        DecodedJWT decodedJWT=JWT.decode(token);
+        String id=decodedJWT.getClaim("sub").toString();
+        logger.debug("JwtService.getIdFromToken( {} ) id {}",token,id);
+        return id;
+    }
+
    public String getAttributeFromToken(String token,String attribute){
         DecodedJWT decodedJWT=JWT.decode(token);
         String result=decodedJWT.getClaim(attribute).toString();

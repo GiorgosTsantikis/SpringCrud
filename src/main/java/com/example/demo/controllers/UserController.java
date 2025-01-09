@@ -94,7 +94,7 @@ public class UserController {
             String userImg=userDetails.getProfilePic();
             if(userImg!=null){
                 String encodedImg= Base64.getEncoder().encodeToString(imageService.getImage(userImg));
-                logger.debug("/picture success userDetails {}, encodedImg {}",userDetails,encodedImg);
+                logger.debug("/picture success userDetails {}",userDetails);
                 return ResponseEntity.ok(encodedImg);
             }else{
                 logger.debug("user has no img returning 404");
