@@ -22,7 +22,7 @@ public class DemoApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 
-
+//this is a comment to test out how git from the terminal works
 
 
 
